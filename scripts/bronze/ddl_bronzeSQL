@@ -1,0 +1,119 @@
+/*
+===============================================================================
+DDL Script: Création des tables Bronze Layer
+===============================================================================
+Objectif :
+    Ce script crée les tables du schéma 'bronze', en supprimant au préalable
+    les tables existantes du même nom si elles existent.
+    La couche Bronze stocke les données brutes, telles qu'extraites des
+    systèmes sources (CRM et ERP), sans transformation ni nettoyage.
+ 
+Usage :
+    Exécuter ce script pour (re)créer entièrement le schéma DDL de la
+    couche Bronze.
+ 
+Attention :
+    Ce script supprime (DROP) les tables existantes avant de les recréer.
+    Toutes les données actuellement présentes dans ces tables seront
+    définitivement perdues. À exécuter uniquement en environnement de
+    développement ou après sauvegarde des données.
+===============================================================================
+*/
+ 
+-- ===========================================================================
+-- Source CRM : Informations clients
+-- ===========================================================================
+IF OBJECT_ID('bronze.crm_cust_info', 'U') IS NOT NULL
+    DROP TABLE bronze.crm_cust_info;
+GO
+ 
+CREATE TABLE bronze.crm_cust_info (
+    cst_id               INT,
+    cst_key              NVARCHAR(50),
+    cst_first_name       NVARCHAR(50),
+    cst_lastname         NVARCHAR(50),
+    cst_material_status  NVARCHAR(50),
+    cst_gndr             NVARCHAR(50),
+    cst_create_date      DATE
+);
+GO
+ 
+-- ===========================================================================
+-- Source CRM : Informations produits
+-- ===========================================================================
+IF OBJECT_ID('bronze.crm_prd_info', 'U') IS NOT NULL
+    DROP TABLE bronze.crm_prd_info;
+GO
+ 
+CREATE TABLE bronze.crm_prd_info (
+    prd_id        INT,
+    prd_key       NVARCHAR(50),
+    prd_nm        NVARCHAR(50),
+    prd_cost      INT,
+    prd_line      NVARCHAR(50),
+    prd_start_dt  DATETIME,
+    prd_end_dt    DATETIME
+);
+GO
+ 
+-- ===========================================================================
+-- Source CRM : Détails des ventes
+-- ===========================================================================
+IF OBJECT_ID('bronze.crm_sales_datails', 'U') IS NOT NULL
+    DROP TABLE bronze.crm_sales_datails;
+GO
+ 
+CREATE TABLE bronze.crm_sales_datails (
+    sls_ord_num   NVARCHAR(50),
+    sls_prod_key  NVARCHAR(50),
+    sls_cust_id   INT,
+    sls_order_dt  INT,   -- Format brut source (ex: YYYYMMDD), non converti en DATE
+    sls_ship_dt   INT,
+    sls_due_dt    INT,
+    sls_sales     INT,
+    sls_quantity  INT,
+    sls_price     INT
+);
+GO
+ 
+-- ===========================================================================
+-- Source ERP : Localisation client
+-- ===========================================================================
+IF OBJECT_ID('bronze.erp_loc_a101', 'U') IS NOT NULL
+    DROP TABLE bronze.erp_loc_a101;
+GO
+ 
+CREATE TABLE bronze.erp_loc_a101 (
+    cid    NVARCHAR(50),
+    cntry  NVARCHAR(50)
+);
+GO
+ 
+-- ===========================================================================
+-- Source ERP : Données démographiques client
+-- ===========================================================================
+IF OBJECT_ID('bronze.erp_cust_az12', 'U') IS NOT NULL
+    DROP TABLE bronze.erp_cust_az12;
+GO
+ 
+CREATE TABLE bronze.erp_cust_az12 (
+    cid    NVARCHAR(50),
+    bdate  DATE,
+    gen    NVARCHAR(50)
+);
+GO
+ 
+-- ===========================================================================
+-- Source ERP : Catégories produits
+-- ===========================================================================
+IF OBJECT_ID('bronze.erp_px_cat_g1v2', 'U') IS NOT NULL
+    DROP TABLE bronze.erp_px_cat_g1v2;
+GO
+ 
+CREATE TABLE bronze.erp_px_cat_g1v2 (
+    id           NVARCHAR(50),
+    cat          NVARCHAR(50),
+    subcat       NVARCHAR(50),
+    maintenance  NVARCHAR(50)
+);
+GO
